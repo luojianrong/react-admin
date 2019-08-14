@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Form,Input,Icon,Button,message} from 'antd';
 import axios from 'axios';
+import {reqLogin} from '../../api'
 
 import img from './logo.png';
 import './index.less';
@@ -28,19 +29,14 @@ class Login extends Component {
   goLogin = (e) =>{
     e.preventDefault();
     this.props.form.validateFields((errors, values) =>{
-      axios.post('http://localhost:3000/login',values)
+      const {username,password} = values
+      reqLogin(username,password)
         .then((respones)=>{
-          const status = respones.data.status;
-          if (status===0){
-            //登录成功
-            message.success('登录成功')
-          }else if (status ===1){
-            //登录失败
-            message.error('登录失败')
-          }
+          message.success('登录成功')
         })
         .catch((err)=>{
-          if (err) message.error("网络错误，请稍后再试")
+          message.error("用户名或密码错误");
+          this.props.form.resetFields(['password'])
         })
     });
   }
@@ -72,6 +68,7 @@ class Login extends Component {
           </Item>
           <Item>
             {
+              /*getFieldDecorator:用于表单进行双向绑定，是一个高阶组件*/
               getFieldDecorator(
               'password',
                 {
