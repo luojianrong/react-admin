@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {Form,Input,Icon,Button,message} from 'antd';
-import axios from 'axios';
-import {reqLogin} from '../../api'
+import {reqLogin} from '../../api';
+import data from '../../utils/store';
+import {setItem} from '../../utils/storege';
 
-import img from './logo.png';
+import logo from '../../assets/images/logo.png';
 import './index.less';
 
 const Item = Form.Item;
@@ -32,7 +33,12 @@ class Login extends Component {
       const {username,password} = values
       reqLogin(username,password)
         .then((respones)=>{
-          message.success('登录成功')
+          message.success('登录成功');
+          //保存数据
+          data.user=respones;
+          setItem(respones);
+
+          this.props.history.replace('/');
         })
         .catch((err)=>{
           message.error("用户名或密码错误");
@@ -46,7 +52,7 @@ class Login extends Component {
     const {getFieldDecorator} = this.props.form;
     return <div className='login'>
       <header className='login-header'>
-        <img src={img} alt="img"/>
+        <img src={logo} alt="logo"/>
         <h1>React项目: 后台管理系统</h1>
       </header>
       <div className='login-section'>
