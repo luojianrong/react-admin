@@ -28,3 +28,15 @@ export const  reqWeather = (cityname) => {
   });
 
 }
+
+
+//封装分类展示的请求
+export const getCategory = (parentId) => axiosInstance.get(`/manage/category/list`,{
+  params:{
+    parentId
+  }
+});
+
+
+//封装添加分类的请求
+export const addCategoryFrom = (categoryName,parentId) => axiosInstance.post('/manage/category/add',{categoryName,parentId});
