@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import {Form, Input, Modal, Select} from "antd";
+import {Form, Input, Select} from "antd";
+import PropTypes from 'prop-types'
 
 const {Item} = Form;
 const {Option} = Select;
 
 class AddCategory  extends Component {
-
+static propTypes ={
+  categories:PropTypes.array.isRequired
+}
 
 
   render() {

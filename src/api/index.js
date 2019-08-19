@@ -40,3 +40,16 @@ export const getCategory = (parentId) => axiosInstance.get(`/manage/category/lis
 
 //封装添加分类的请求
 export const addCategoryFrom = (categoryName,parentId) => axiosInstance.post('/manage/category/add',{categoryName,parentId});
+
+
+//封装修改分类名称的请求
+export const updateCategoryNameFrom = (categoryId,categoryName) => axiosInstance.post('/manage/category/update',{categoryId,categoryName});
+
+
+//封装获取产品列表的请求
+export const getProducts = (pageNum, pageSize) => axiosInstance.get('/manage/product/list', {
+  params: {
+    pageNum,
+    pageSize
+  }
+})

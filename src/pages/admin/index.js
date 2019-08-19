@@ -79,7 +79,7 @@ export default class  Admin extends Component {
 
     return (
       <Layout style={{ minHeight: '100vh' }}>
-        <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
+        <Sider collapsible collapsed={collapsed}  onCollapse={this.onCollapse}>
           <div className="admin-logo" >
             <img src={logo} alt="logo"/>
             <h1 style={{display:isDisplay}}>硅谷后台</h1>
@@ -104,9 +104,8 @@ export default class  Admin extends Component {
               <Redirect to='/home'/>
             </Switch>
           </div>
-
           </Content>
-          <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
+          <Footer style={{ textAlign: 'center' }}>推荐使用谷歌浏览器，可以获得更佳页面操作体验</Footer>
         </Layout>
       </Layout>
     )

@@ -28,17 +28,17 @@ class HeaderMain extends Component {
   }*/
 
   static getDerivedStateFromProps(nextProps,prevState){
-    const {pathname} = nextProps.location;
-   // console.log(pathname);
-    if (pathname === '/'){
+    let {pathname} = nextProps.location;
+    /*if (pathname === '/'){
       return {
         title: "首页"
       }
+    }*/
+    if (pathname.startsWith('/product')){
+      pathname='/product'
     }
-    //console.log(1);
 
     for (let i= 0; i<menuList.length ; i++){
-      //console.log(2);
       const menu = menuList[i];
 
       if (menu.children){
@@ -54,13 +54,15 @@ class HeaderMain extends Component {
         }
       } else{
         //一级菜单
-       //console.log(3);
         if (menu.key === pathname){
           return {
             title: menu.title
           }
         }
       }
+    }
+    return {
+      title: "首页"
     }
   }
 
