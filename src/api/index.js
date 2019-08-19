@@ -47,9 +47,13 @@ export const updateCategoryNameFrom = (categoryId,categoryName) => axiosInstance
 
 
 //封装获取产品列表的请求
-export const getProducts = (pageNum, pageSize) => axiosInstance.get('/manage/product/list', {
+export const reqProducts = (pageNum, pageSize) => axiosInstance.get('/manage/product/list', {
   params: {
     pageNum,
     pageSize
   }
 })
+
+
+//添加产品请求
+export const addProduct = ({ name, desc, price, detail, categoryId, pCategoryId })=> axiosInstance.post('/manage/product/add',{ name, desc, price, detail, categoryId, pCategoryId })

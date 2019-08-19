@@ -37,11 +37,12 @@ export default class Category extends Component {
         addCategoryFrom(categoryName,parentId)
           .then((res)=>{
             //判断需要展示的数据是一级分类还是二级分类
-            const {isShowSubCategory} = this.state;
-            const isSubCategories = +parentId !==0;
+            const {isShowSubCategory,category} = this.state;
+           // const isSubCategories = +parentId !==0;
+
             const key = isShowSubCategory?'subCategories':'categories';
-            if (!isShowSubCategory && isSubCategories) {
-              //在一级分类中添加二级分类，不需要更新二级菜单
+            if (isShowSubCategory && parentId !== category._id) {
+              //在二级分类中添加二级分类，不需要更新二级菜单
               return;
             }
             //请求成功更新数据
@@ -59,7 +60,7 @@ export default class Category extends Component {
               isShowForm:false,
             });
             //并清空表单数据
-            this.updateCategoryNameRef.current.resetFields();
+            this.addCategoryRef.current.resetFields();
           })
       }
     })
@@ -96,7 +97,6 @@ export default class Category extends Component {
           })
           .catch((err)=>{
             message.error("更新状态失败",err)
-            console.log(err)
           })
           .finally(()=>{
             this.setState({
@@ -184,7 +184,7 @@ export default class Category extends Component {
   render() {
     const {isShowForm,categories,subCategories,isShowSubCategory,category,isCategoryName} = this.state;
 
-    return <Card title={ isShowSubCategory?<Fragment>
+    return <Card title={ isShowSubCategory? <Fragment>
       <Button type="link" className="category-btn" onClick={this.backCategory}>一级分类</Button>
       <Icon type="arrow-right"/>
       <span className="category-text">{category.name}</span>

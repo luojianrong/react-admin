@@ -1,7 +1,8 @@
 
 import React, { Component ,Fragment} from 'react';
 import {Card,Icon,Input,InputNumber,Cascader,Form,Button,message} from 'antd';
-import {getCategory} from '../../../api';
+import {getCategory,addProduct} from '../../../api';
+import RichTextEditor from './rich-text-editor';
 
 const {Item} = Form;
 class SaveUpdate extends Component {
@@ -11,9 +12,46 @@ class SaveUpdate extends Component {
   //表单提交事件
   submit = (e)=>{
     e.preventDefault();
+    this.props.form.validateFields((err,values)=>{
+        console.log(values);
+        if (!err){
+        //id是一个数组
+        const { name, desc, price, id, detail } = values;
+        let categoryId,pCategoryId;
+        if (id.length===1){
+          //当长度只有一个值时，表示是一级菜单
+          pCategoryId = 0;
+          categoryId = id[0];
+        } else {
+          pCategoryId = id[0];
+          categoryId = id[1];
+        }
+        addProduct({ name, desc, price, detail, categoryId, pCategoryId })
+          .then((res)=>{
+            message.success("添加产品成功");
+            this.props.history.push('/product/index');
+          })
+          .catch((err)=>{
+            message.error("添加产品失败")
+          })
+      }
+    }
+    )
   }
-  onChange = ()=>{
 
+  //自定义收集表单项的值
+  getEditorVale = (text)=>{
+    this.props.form.setFields({
+      detail: {
+        value: text
+      }
+    });
+  }
+
+  goBack = ()=>{
+    //返回到index页面
+    this.props.history.push('/product/index');
+    // this.props.history.goBack();
   }
 
   componentDidMount(){
@@ -37,7 +75,7 @@ class SaveUpdate extends Component {
   }
 
   //子菜单数据加载事件
-  loaData=(selectOptions)=>{
+  loadData=(selectOptions)=>{
     //找到最后一级菜单对象
     const targetOption = selectOptions[selectOptions.length-1];
     targetOption.loading = true; //设置加载图标
@@ -69,7 +107,7 @@ class SaveUpdate extends Component {
   render() {
     const {getFieldDecorator} = this.props.form;
     const {options} = this.state;
-    return <Card title={<Fragment><Icon type="arrow-left"/>&nbsp;&nbsp;添加商品</Fragment>}>
+    return <Card title={<Fragment><Icon type="arrow-left" onClick={this.goBack}/>&nbsp;&nbsp;添加商品</Fragment>}>
       <Form onSubmit={this.submit} labelCol={{span:2}} wrapperCol={{span:8}}>
         <Item label="商品名称">
           {
@@ -117,7 +155,8 @@ class SaveUpdate extends Component {
             )(
               <Cascader
                 options={options}
-                loadData={this.loaData}
+                loadData={this.loadData}
+                placeholder="请选择商品分类"
               />
             )
           }
@@ -125,7 +164,7 @@ class SaveUpdate extends Component {
         <Item label="商品价格">
           {
             getFieldDecorator(
-              "id",
+              "price",
               {
                 rules:[
                   {
@@ -134,15 +173,27 @@ class SaveUpdate extends Component {
                 ]
               }
             )(
-              <InputNumber  onChange={this.onChange}
-                            formatter={value => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                            parser={value => value.replace(/\￥\s?|(,*)/g, '')}
-                            className="save-update-input"/>
+              <InputNumber
+                formatter={value => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={value => value.replace(/￥\s?|(,*)/g, '')}
+                className="save-update-input"
+              />
             )
           }
         </Item>
-        <Item label="商品详情">
-          <Input/>
+        <Item label="商品详情" wrapperCol={{span:20}}>
+          {
+            getFieldDecorator(
+              "detail",
+              {
+                rules:[
+                  {required:true,message:"请输入商品详情"}
+                ]
+              }
+            )(
+              <RichTextEditor getEditorVale={this.getEditorVale}/>
+            )
+          }
         </Item>
         <Item>
           <Button type="primary" htmlType="submit" className="save-update-btn">提交</Button>
@@ -153,4 +204,4 @@ class SaveUpdate extends Component {
   }
 }
 
-export default Form.create()(SaveUpdate)
+export default Form.create()(SaveUpdate);
