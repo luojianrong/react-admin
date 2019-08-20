@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import {menuList} from '../../config';
 import {Icon, Menu} from "antd";
-import {withRouter,Link} from 'react-router-dom';   //withRouter
+import {withRouter,Link} from 'react-router-dom';
+import {menuList} from '../../config';
+import data from '../../utils/store';
 
 const { SubMenu } = Menu;
 
@@ -9,19 +10,47 @@ class LeftNav extends Component {
   constructor(props){
     super(props);
 
+    this.state = {
+      selectKey:''
+    }
+
     //获取当前页面的url
     let {pathname} = props.location;
 
     if (pathname.startsWith('/product')){
       pathname = '/product'
     }
-    //侧边栏只需要创建一次，传入url
-    this.menus= this.createMenu(pathname);
 
-    this.state = {
-      selectKey:''
-    }
+    //获取内存中用户的权限菜单
+    const roleMenus = data.user.role.menus;
+    //进行过滤，生成权限菜单
+    const menus = this.filterMenu(menuList,roleMenus);
+
+    //侧边栏只需要创建一次，传入url
+    this.menuss= this.createMenu(pathname,menus);
   }
+
+  //根据权限菜单精心过滤
+  filterMenu = (menuList, roleMenus) => {
+    return menuList.reduce((prev, curr) => {
+      if (roleMenus.includes(curr.key)) {
+        prev.push(curr);
+      } else {
+        // 一级菜单没有配置上，看是否有二级菜单
+        if (curr.children) {
+          const cMenus = curr.children.filter((cMenu) => roleMenus.includes(cMenu.key));
+          if (cMenus.length) {
+            // 可能子菜单有三个，但是添加1个
+            curr.children = cMenus;
+            prev.push(curr);
+          }
+        }
+      }
+      return prev;
+    }, []);
+  };
+
+
 
   static getDerivedStateFromProps(nextState){
     let path = nextState.location.pathname;
@@ -45,8 +74,8 @@ class LeftNav extends Component {
     )
   }
 
-  createMenu=(path)=>{
-    return menuList.map((menu)=> {
+  createMenu=(path,menus)=>{
+   return menus.map((menu)=> {
       if (menu.children){
         //如果有则是二级菜单
         return (
@@ -72,7 +101,7 @@ class LeftNav extends Component {
     /*defaultSelectedKeys：默认选中；defaultOpenKeys：默认展开*/
     return  <Menu theme="dark" selectedKeys={[this.state.selectKey]}  defaultOpenKeys={[this.openKey]} mode="inline">
       {
-        this.menus
+        this.menuss
       }
     </Menu>
   }

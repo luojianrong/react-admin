@@ -26,6 +26,7 @@ export default class  Admin extends Component {
   state = {
     collapsed:false,
     isDisplay:'block',
+    menus:[]
   }
 
   //检查用户是否登陆过
@@ -47,7 +48,7 @@ export default class  Admin extends Component {
           data.user = user;
           //更新状态
           this.setState({
-
+            menus: user.role.menus
           });
         })
         .catch((err) => {
@@ -75,7 +76,7 @@ export default class  Admin extends Component {
     const isLoading= this.checkLogin();
     if (isLoading) return <Spin className="admin-loading" tip="loading...." size="large"/>;
 
-    const  {collapsed,isDisplay} = this.state;
+    const  {collapsed,isDisplay,menus} = this.state;
 
     return (
       <Layout style={{ minHeight: '100vh' }}>
@@ -93,14 +94,30 @@ export default class  Admin extends Component {
           <Content style={{ margin: '65px 16px' }}>
             <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
             <Switch>
-              <Route path='/home' component={Home} />
-              <Route path='/category' component={Category} />
-              <Route path='/product' component={Product} />
-              <Route path='/user' component={User} />
-              <Route path='/role' component={Role} />
-              <Route path='/charts/line' component={Line} />
-              <Route path='/charts/bar' component={Bar} />
-              <Route path='/charts/pie' component={Pie} />
+              {
+               menus.map((menu,index)=>{
+                 switch (menu) {
+                   case '/home':
+                     return <Route key={index} path='/home' component={Home} />
+                   case '/category':
+                     return <Route key={index} path='/category' component={Category} />
+                   case '/product':
+                     return <Route key={index} path='/product' component={Product} />
+                   case '/user':
+                     return <Route key={index} path='/user' component={User} />
+                   case '/role':
+                     return <Route key={index} path='/role' component={Role} />
+                   case '/charts/line':
+                     return <Route key={index} path='/charts/line' component={Line} />
+                   case '/charts/bar':
+                     return <Route key={index} path='/charts/bar' component={Bar} />
+                   case '/charts/pie':
+                     return <Route key={index} path='/charts/pie' component={Pie} />
+                   default:
+                     return null;
+                 }
+                })
+              }
               <Redirect to='/home'/>
             </Switch>
           </div>
